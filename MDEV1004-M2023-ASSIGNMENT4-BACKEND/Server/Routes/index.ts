@@ -32,7 +32,7 @@ router.put("/update/:id", passport.authenticate("jwt", { session: false }), (req
 );
 
 /* GET /api/delete/:id - delete a movie by id */
-router.delete("/:id", passport.authenticate("jwt", { session: false }), (req, res, next) =>
+router.delete("/delete/:id", passport.authenticate("jwt", { session: false }), (req, res, next) =>
     DeleteMovie(req, res, next)
 );
 

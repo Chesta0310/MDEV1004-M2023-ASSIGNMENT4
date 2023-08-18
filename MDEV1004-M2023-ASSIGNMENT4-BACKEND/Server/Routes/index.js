@@ -12,7 +12,7 @@ router.get("/list", passport_1.default.authenticate("jwt", { session: false }), 
 router.get("/find/:id", passport_1.default.authenticate("jwt", { session: false }), (req, res, next) => (0, movie_1.DisplayMovieByID)(req, res, next));
 router.post("/add", passport_1.default.authenticate("jwt", { session: false }), (req, res, next) => (0, movie_1.AddMovie)(req, res, next));
 router.put("/update/:id", passport_1.default.authenticate("jwt", { session: false }), (req, res, next) => (0, movie_1.UpdateMovie)(req, res, next));
-router.delete("/:id", passport_1.default.authenticate("jwt", { session: false }), (req, res, next) => (0, movie_1.DeleteMovie)(req, res, next));
+router.delete("/delete/:id", passport_1.default.authenticate("jwt", { session: false }), (req, res, next) => (0, movie_1.DeleteMovie)(req, res, next));
 router.post("/register", (req, res, next) => (0, user_1.ProcessRegisterPage)(req, res, next));
 router.post("/login", (req, res, next) => (0, user_1.ProcessLogin)(req, res, next));
 router.get("/logout", (req, res, next) => (0, user_1.ProcessLogout)(req, res, next));
