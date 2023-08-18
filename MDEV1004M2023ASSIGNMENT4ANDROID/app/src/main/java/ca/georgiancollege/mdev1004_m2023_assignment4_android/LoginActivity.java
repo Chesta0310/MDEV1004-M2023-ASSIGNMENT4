@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity
     private void loginUser(String username, String password)
     {
 
-        APIService movieService = new Retrofit.Builder()
+        APIService apiService = new Retrofit.Builder()
                 .baseUrl("https://mdev1004-m2023-assignment4-ea2x.onrender.com")
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build().create(APIService.class);
@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity
         LoginRequest loginRequest = new LoginRequest(username, password);
 
 
-        Call<LoginResponse> call = movieService.loginUser(loginRequest);
+        Call<LoginResponse> call = apiService.loginUser(loginRequest);
         call.enqueue(new Callback<LoginResponse>()
         {
             @Override

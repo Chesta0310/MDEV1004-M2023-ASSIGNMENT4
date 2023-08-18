@@ -69,12 +69,12 @@ public class RegisterActivity extends AppCompatActivity
 
         RegisterRequest registerRequest = new RegisterRequest(firstName, lastName, email, username, password);
 
-        APIService movieService = new Retrofit.Builder()
+        APIService apiService = new Retrofit.Builder()
                 .baseUrl("https://mdev1004-m2023-assignment4-ea2x.onrender.com")
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build().create(APIService.class);
 
-        Call<BasicResponse> call = movieService.registerUser(registerRequest);
+        Call<BasicResponse> call = apiService.registerUser(registerRequest);
         call.enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {

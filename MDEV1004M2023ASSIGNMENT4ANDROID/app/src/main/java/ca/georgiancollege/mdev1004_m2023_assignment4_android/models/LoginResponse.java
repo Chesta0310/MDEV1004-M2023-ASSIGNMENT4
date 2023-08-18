@@ -6,10 +6,10 @@ package ca.georgiancollege.mdev1004_m2023_assignment4_android.models;
 import com.squareup.moshi.Json;
 
 public class LoginResponse extends BasicResponse {
-    @Json(name = "user") private User user;
+    @Json(name = "user") private Object user;
     @Json(name = "token") private String token;
 
-    public User getUser() {
+    public Object getUser() {
         return user;
     }
 
