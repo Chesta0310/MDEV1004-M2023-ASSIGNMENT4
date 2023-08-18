@@ -5,12 +5,15 @@
 package ca.georgiancollege.mdev1004_m2023_assignment4_android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +23,11 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import ca.georgiancollege.mdev1004_m2023_assignment4_android.models.Movie;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>
 {
@@ -53,7 +61,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         holder.nameTextView.setText(movie.getTitle());
         holder.studioTextView.setText(movie.getStudio());
         holder.criticsRatingTextView.setText(String.valueOf(movie.getCriticsRating()));
-        Log.d("AAAAA", "posterLink: "+movie.getPosterLink());
+        Log.d("AAAAA", "posterLink: " + movie.getPosterLink());
 
         if (movie.getPosterLink() != null && !movie.getPosterLink().isEmpty())
         {
@@ -76,6 +84,58 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     {
         this.movies = movies;
         this.notifyDataSetChanged();
+    }
+
+    public Context getContext()
+    {
+        return this.context;
+    }
+
+    public void deleteItem(int position)
+    {
+        deleteMovie(position);
+    }
+
+
+    private void deleteMovie(int position)
+    {
+        Movie movie = movies.get(position);
+
+        APIService apiService = new Retrofit.Builder()
+                .baseUrl("https://mdev1004-m2023-assignment4-ea2x.onrender.com")
+                .addConverterFactory(MoshiConverterFactory.create())
+                .build().create(APIService.class);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String authToken = preferences.getString("AuthToken", "");
+
+        // Add the AuthToken to the request headers
+        String authorizationHeader = "Bearer " + authToken;
+        Call<Void> call = apiService.deleteMovie(authorizationHeader, movie.getId());
+
+        call.enqueue(new Callback<Void>()
+        {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response)
+            {
+                if (response.isSuccessful())
+                {
+                    notifyItemRemoved(position);
+                } else
+                {
+                    // Handle the error here (e.g., show a Toast)
+                    Toast.makeText(context, "Failed to delete movie.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t)
+            {
+                // Handle the error here (e.g., show a Toast)
+                Toast.makeText(context, "Failed to delete movie. Error: " + t.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     static class MovieViewHolder extends RecyclerView.ViewHolder

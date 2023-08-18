@@ -5,6 +5,7 @@
 package ca.georgiancollege.mdev1004_m2023_assignment4_android;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,6 +55,9 @@ public class MainActivity extends AppCompatActivity
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         movieAdapter = new MovieAdapter(movies, this);
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this, movieAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(movieAdapter);
     }
 
@@ -128,5 +132,8 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
 
 }
