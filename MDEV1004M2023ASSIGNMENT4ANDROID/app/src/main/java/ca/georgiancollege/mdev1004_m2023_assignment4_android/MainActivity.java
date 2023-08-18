@@ -4,16 +4,16 @@
 // Date: 17th August 2023
 package ca.georgiancollege.mdev1004_m2023_assignment4_android;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity
     private List<Movie> movies;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity
 
         findViewById(R.id.addNewButton).setOnClickListener(view ->
         {
-
+            Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.logoutButton).setOnClickListener(view -> logout());
@@ -83,12 +85,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
         fetchMovies();
     }
 
-    private void fetchMovies() {
+    private void fetchMovies()
+    {
 
         APIService apiService = new Retrofit.Builder()
                 .baseUrl("https://mdev1004-m2023-assignment4-ea2x.onrender.com")
@@ -101,14 +105,17 @@ public class MainActivity extends AppCompatActivity
         // Add the AuthToken to the request headers
         String authorizationHeader = "Bearer " + authToken;
         Call<MovieListResponse> call = apiService.getMovies(authorizationHeader);
-        call.enqueue(new Callback<MovieListResponse>() {
+        call.enqueue(new Callback<MovieListResponse>()
+        {
             @Override
-            public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+            public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response)
+            {
                 handleMovieListResponse(response);
             }
 
             @Override
-            public void onFailure(Call<MovieListResponse> call, Throwable t) {
+            public void onFailure(Call<MovieListResponse> call, Throwable t)
+            {
                 Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -116,24 +123,28 @@ public class MainActivity extends AppCompatActivity
 
     private void handleMovieListResponse(Response<MovieListResponse> response)
     {
-        if (response.isSuccessful() && response.body() != null) {
+        if (response.isSuccessful() && response.body() != null)
+        {
             MovieListResponse movieListResponse = response.body();
-            if (movieListResponse.isSuccess()) {
+            if (movieListResponse.isSuccess())
+            {
                 List<Movie> movies = movieListResponse.getMovies();
-                if (movies != null && !movies.isEmpty()) {
+                if (movies != null && !movies.isEmpty())
+                {
                     movieAdapter.setMovies(movies);
-                } else {
+                } else
+                {
                     Toast.makeText(MainActivity.this, "No movies available.", Toast.LENGTH_SHORT).show();
                 }
-            } else {
+            } else
+            {
                 Toast.makeText(MainActivity.this, "Error: " + movieListResponse.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        } else {
+        } else
+        {
             Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
 
 }

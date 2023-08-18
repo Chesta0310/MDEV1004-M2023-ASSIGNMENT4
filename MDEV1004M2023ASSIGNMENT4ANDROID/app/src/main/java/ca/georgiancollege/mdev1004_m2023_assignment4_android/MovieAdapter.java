@@ -5,9 +5,9 @@
 package ca.georgiancollege.mdev1004_m2023_assignment4_android;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,16 +61,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         holder.nameTextView.setText(movie.getTitle());
         holder.studioTextView.setText(movie.getStudio());
         holder.criticsRatingTextView.setText(String.valueOf(movie.getCriticsRating()));
-        Log.d("AAAAA", "posterLink: " + movie.getPosterLink());
 
         if (movie.getPosterLink() != null && !movie.getPosterLink().isEmpty())
         {
             Glide
                     .with(context)
                     .load(movie.getPosterLink())
+                    .fallback(R.drawable.placeholder_poster)
+                    .placeholder(R.drawable.placeholder_poster)
                     .fitCenter()
                     .into(holder.posterImageView);
         }
+
+        holder.itemView.setOnClickListener(v ->
+        {
+            Intent intent = new Intent(context, AddEditActivity.class);
+            intent.putExtra(AddEditActivity.EXTRA_MOVIE_ID, movie);
+            context.startActivity(intent);
+        });
     }
 
 
@@ -120,6 +128,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             {
                 if (response.isSuccessful())
                 {
+                    movies.remove(position);
                     notifyItemRemoved(position);
                 } else
                 {
