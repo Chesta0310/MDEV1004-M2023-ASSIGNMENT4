@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProcessLogout = exports.ProcessLogin = exports.ProcessRegisterPage = void 0;
 const passport_1 = __importDefault(require("passport"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = __importDefault(require("../Models/user"));
+const index_1 = require("../Util/index");
 function ProcessRegisterPage(req, res, next) {
     let newUser = new user_1.default({
         username: req.body.username,
@@ -14,13 +14,6 @@ function ProcessRegisterPage(req, res, next) {
         displayName: req.body.FirstName + " " + req.body.LastName,
     });
     user_1.default.register(newUser, req.body.password, (err) => {
-        if (err instanceof mongoose_1.default.Error.ValidationError) {
-            console.error("All Fields Are Required");
-            return res.json({
-                success: false,
-                msg: "ERROR: User Not Registered. All Fields Are Required",
-            });
-        }
         if (err) {
             console.error("Error: Inserting New User");
             if (err.name == "UserExistsError") {
@@ -54,15 +47,22 @@ function ProcessLogin(req, res, next) {
                 user: user,
             });
         }
-        req.login(user, (err) => {
+        req.logIn(user, (err) => {
             if (err) {
                 console.error(err);
                 return next(err);
             }
+            const authToken = (0, index_1.GenerateToken)(user);
             return res.json({
                 success: true,
-                msg: "User Logged in Successfully!",
-                user: user,
+                msg: "User Logged In Successfully!",
+                user: {
+                    id: user._id,
+                    displayName: user.displayName,
+                    username: user.username,
+                    emailAddress: user.emailAddress,
+                },
+                token: authToken,
             });
         });
     })(req, res, next);

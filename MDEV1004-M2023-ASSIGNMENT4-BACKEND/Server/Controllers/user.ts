@@ -5,10 +5,14 @@
 
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
-import mongoose from "mongoose";
 
 import User from "../Models/user";
 
+import { GenerateToken } from "../Util/index";
+
+/**
+ * Function to handle registration
+ */
 export function ProcessRegisterPage(req: Request, res: Response, next: NextFunction): void {
     // instantiate a new user object
     let newUser = new User({
@@ -17,14 +21,8 @@ export function ProcessRegisterPage(req: Request, res: Response, next: NextFunct
         displayName: req.body.FirstName + " " + req.body.LastName,
     });
 
+    // Using Passport local mongoose to register the user
     User.register(newUser, req.body.password, (err) => {
-        if (err instanceof mongoose.Error.ValidationError) {
-            console.error("All Fields Are Required");
-            return res.json({
-                success: false,
-                msg: "ERROR: User Not Registered. All Fields Are Required",
-            });
-        }
         if (err) {
             console.error("Error: Inserting New User");
             if (err.name == "UserExistsError") {
@@ -47,6 +45,9 @@ export function ProcessRegisterPage(req: Request, res: Response, next: NextFunct
     });
 }
 
+/**
+ * Function to handle login
+ */
 export function ProcessLogin(req: Request, res: Response, next: NextFunction): void {
     passport.authenticate("local", (err: any, user: any, info: any) => {
         // are there server errors?
@@ -62,26 +63,39 @@ export function ProcessLogin(req: Request, res: Response, next: NextFunction): v
                 user: user,
             });
         }
-        req.login(user, (err) => {
+        req.logIn(user, (err) => {
             // are there DB errors?
             if (err) {
                 console.error(err);
                 return next(err);
             }
-            // if we had a front-end (like Angular or React or Mobile UI)...
+            const authToken = GenerateToken(user);
+
+            // return response
             return res.json({
                 success: true,
-                msg: "User Logged in Successfully!",
-                user: user,
+                msg: "User Logged In Successfully!",
+                user: {
+                    id: user._id,
+                    displayName: user.displayName,
+                    username: user.username,
+                    emailAddress: user.emailAddress,
+                },
+                token: authToken,
             });
         });
     })(req, res, next);
 }
 
+/**
+ * Function to handle logout
+ */
 export function ProcessLogout(req: Request, res: Response, next: NextFunction): void {
+    // Using logout function provided by passport js to logout
     req.logout(() => {
+        // When logout is successful
         console.log("User Logged Out");
+        // return response
         res.json({ success: true, msg: "User Logged out Successfully!" });
     });
-    // if we had a front-end (Angular, React or Mobile UI)...
 }
