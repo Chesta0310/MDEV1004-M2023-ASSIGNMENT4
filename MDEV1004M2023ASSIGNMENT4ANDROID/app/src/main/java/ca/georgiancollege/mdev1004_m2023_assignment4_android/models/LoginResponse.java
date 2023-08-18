@@ -5,19 +5,9 @@
 package ca.georgiancollege.mdev1004_m2023_assignment4_android.models;
 import com.squareup.moshi.Json;
 
-public class LoginResponse {
-    @Json(name = "success") private boolean success;
-    @Json(name = "msg") private String message;
+public class LoginResponse extends BasicResponse {
     @Json(name = "user") private User user;
     @Json(name = "token") private String token;
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 
     public User getUser() {
         return user;
